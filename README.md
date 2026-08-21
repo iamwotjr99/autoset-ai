@@ -46,7 +46,8 @@
 
 ## 🗄️ 5. 데이터베이스 구조 (ERD)
 
-*(DB 테이블 설계 완료 후 ERD 다이어그램 추가 예정)*
+### DBML 스키마 명세
+![AutoSet AI ERD](./docs/images/erd-phase1.png)
 
 ---
 

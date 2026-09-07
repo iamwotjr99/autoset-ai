@@ -22,6 +22,8 @@ public class AuthService {
     private final JwtProvider jwtProvider;
     private final RefreshTokenRedisRepository refreshTokenRepository;
 
+
+    // 추후 소셜 로그인 제공자가 카카오뿐만 아니라 추가가 된다면 Provider를 변수로 받아야함
     @Transactional
     public AuthTokenResponse socialLogin(String socialAccessToken) {
 
@@ -65,7 +67,7 @@ public class AuthService {
     }
 
 
-    public AuthTokenResponse issueTokens(Long memberId) {
+    private AuthTokenResponse issueTokens(Long memberId) {
         String accessToken = jwtProvider.createAccessToken(memberId);
         String refreshToken = jwtProvider.createRefreshToken(memberId);
 

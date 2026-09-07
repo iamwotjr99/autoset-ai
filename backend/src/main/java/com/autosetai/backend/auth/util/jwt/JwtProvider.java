@@ -42,7 +42,7 @@ public class JwtProvider {
     }
 
     // 공통 토큰 발급
-    public String createToken(Long memberId, long expirationTime) {
+    private String createToken(Long memberId, long expirationTime) {
         Date now = new Date();
         Date expiration = new Date(now.getTime() + expirationTime);
 

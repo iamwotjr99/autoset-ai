@@ -9,11 +9,12 @@ import com.autosetai.backend.auth.service.dto.AuthTokenResponse;
 import com.autosetai.backend.auth.util.RandomNicknameGenerator;
 import com.autosetai.backend.auth.util.jwt.JwtProvider;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AuthService {
 
     private final MemberRepository memberRepository;

@@ -1,5 +1,6 @@
 package com.autosetai.backend.auth;
 
+import com.autosetai.backend.auth.controller.dto.ReissueTokensRequest;
 import com.autosetai.backend.auth.controller.dto.SocialLoginRequest;
 import com.autosetai.backend.auth.domain.model.Member;
 import com.autosetai.backend.auth.domain.model.Member.Provider;
@@ -7,6 +8,7 @@ import com.autosetai.backend.auth.domain.repository.MemberRepository;
 import com.autosetai.backend.auth.infrastructure.oauth.OAuthClient;
 import com.autosetai.backend.auth.infrastructure.oauth.OAuthUserProfile;
 import com.autosetai.backend.auth.infrastructure.redis.RefreshTokenRedisRepository;
+import com.autosetai.backend.auth.util.jwt.JwtProvider;
 import com.autosetai.backend.common.IntegrationTestSupport;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,6 +33,9 @@ class AuthIntegrationTest extends IntegrationTestSupport {
 
     @Autowired
     private RefreshTokenRedisRepository refreshTokenRedisRepository;
+
+    @Autowired
+    private JwtProvider jwtProvider;
 
     @MockitoBean
     private OAuthClient oAuthClient; // 외부 카카오 API만 가짜로 대체
@@ -63,5 +68,43 @@ class AuthIntegrationTest extends IntegrationTestSupport {
         // then: Redis에 생성된 회원 ID로 토큰이 세팅되었는지 검증
         Optional<String> savedRedisToken = refreshTokenRedisRepository.getRefreshTokenByMemberId(savedMember.getId());
         assertThat(savedRedisToken).isPresent();
+    }
+
+    @Test
+    @DisplayName("유효한 리프레시 토큰으로 요청하면, 새로운 토큰 쌍이 발급되고 Redis가 갱신된다")
+    void reissueTokens_Integration_Success() throws Exception {
+        // given 1: DB에 가입된 회원을 강제로 하나 밀어넣음
+        Member member = Member.builder()
+                .socialId("kakao_1234")
+                .provider(Member.Provider.KAKAO)
+                .nickname("득근득근_1234")
+                .build();
+        memberRepository.save(member);
+
+        // given 2: JwtProvider로 해당 유저의 리프레시 토큰을 생성
+        String validRefreshToken = jwtProvider.createRefreshToken(member.getId());
+
+        // given 3: 생성된 토큰을 Redis에 적재
+        refreshTokenRedisRepository.save(member.getId(), validRefreshToken);
+
+        // API 요청 DTO 생성
+        ReissueTokensRequest request = new ReissueTokensRequest(validRefreshToken);
+
+        // when & then: 컨트롤러로 HTTP POST 요청 전송
+        mockMvc.perform(post("/api/auth/reissue-tokens")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                // 1. 응답에 액세스/리프레시 토큰이 모두 존재하는지 확인
+                .andExpect(jsonPath("$.accessToken").exists())
+                .andExpect(jsonPath("$.refreshToken").exists())
+                // 2. 발급된 리프레시 토큰이 기존 토큰과 '다른' 새로운 토큰인지 확인 (RTR 방식)
+                .andExpect(jsonPath("$.refreshToken").value(org.hamcrest.Matchers.not(validRefreshToken)));
+
+        // then (DB 검증): Redis에 새로운 토큰으로 잘 덮어씌워졌는지 최종 확인
+        Optional<String> tokenInRedis = refreshTokenRedisRepository.getRefreshTokenByMemberId(member.getId());
+        assertThat(tokenInRedis).isPresent();
+        assertThat(tokenInRedis.get()).isNotEqualTo(validRefreshToken);
     }
 }

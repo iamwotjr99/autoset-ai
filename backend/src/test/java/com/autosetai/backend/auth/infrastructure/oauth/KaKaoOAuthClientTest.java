@@ -66,7 +66,7 @@ class KaKaoOAuthClientTest {
         OAuthUserProfile profile = kaKaoOAuthClient.getUserProfile(validToken);
 
         // then
-        assertThat(profile.socialId()).isEqualTo("1234");
+        assertThat(profile.socialId()).isEqualTo("kakao_1234");
         assertThat(profile.provider()).isEqualTo(Provider.KAKAO);
         mockServer.verify(); // 예상한 요청이 실제로 실행되었는지 검증
     }

@@ -34,7 +34,7 @@ public class KaKaoOAuthClient implements OAuthClient {
                 throw new IllegalArgumentException("유효하지 않은 카카오 토큰 입니다: " + accessToken);
             }
 
-            return new OAuthUserProfile(String.valueOf(response.id()), getProvider());
+            return new OAuthUserProfile("kakao_" + response.id(), getProvider());
 
         } catch (HttpClientErrorException e) {
             // 4xx 에러(만료, 잘못된 토큰 등) 발생 시 일관된 예외로 변환

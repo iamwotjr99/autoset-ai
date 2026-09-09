@@ -46,7 +46,7 @@ class AuthControllerTest {
         given(authService.socialLogin(anyString())).willReturn(mockResponse);
 
         // when & then
-        mockMvc.perform(post("/auth/social-login")
+        mockMvc.perform(post("/api/auth/social-login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))) // DTO를 JSON으로 변환하여 바디에 담음
                 .andDo(print()) // 실행 결과를 콘솔에 자세히 출력 (디버깅용)
@@ -62,7 +62,7 @@ class AuthControllerTest {
         SocialLoginRequest request = new SocialLoginRequest(null); // 토큰 누락!
 
         // when & then
-        mockMvc.perform(post("/auth/social-login")
+        mockMvc.perform(post("/api/auth/social-login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
@@ -83,7 +83,7 @@ class AuthControllerTest {
         given(authService.reissueTokens(anyString())).willReturn(mockResponse);
 
         // when & then
-        mockMvc.perform(post("/auth/reissue-tokens")
+        mockMvc.perform(post("/api/auth/reissue-tokens")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
@@ -99,7 +99,7 @@ class AuthControllerTest {
         ReissueTokensRequest request = new ReissueTokensRequest(null); // 리프레시 토큰 누락!
 
         // when & then
-        mockMvc.perform(post("/auth/reissue-tokens")
+        mockMvc.perform(post("/api/auth/reissue-tokens")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())

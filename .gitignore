@@ -17,6 +17,7 @@ out/
 ### Secrets & Configs ###
 *.env
 *.env.local
+*.pem
 
 ### Backend (Java / Spring Boot / Gradle) ###
 .gradle/

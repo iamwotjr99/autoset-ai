@@ -10,9 +10,7 @@ services:
       - autoset-redis-data:/data
 
   backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: iamwotjr99/autoset-backend:latest
     container_name: autoset-backend
     ports:
       - "8080:8080"

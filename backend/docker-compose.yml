@@ -28,7 +28,7 @@ services:
   # 3. Spring Boot 백엔드 애플리케이션
   backend:
     build:
-      context: .
+      context: ..
       dockerfile: Dockerfile
     container_name: autoset-backend
     ports:

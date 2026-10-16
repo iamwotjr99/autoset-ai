@@ -64,6 +64,7 @@ jobs:
           DB_USER: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
           DB_PASS: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
           JWT_SEC: ${{ secrets.JWT_SECRET }}
+          OPENAI_KEY: ${{ secrets.SPRING_AI_OPENAI_API_KEY}}
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
@@ -75,6 +76,7 @@ jobs:
             echo "SPRING_DATASOURCE_USERNAME=$DB_USER" >> .env
             echo "SPRING_DATASOURCE_PASSWORD=$DB_PASS" >> .env
             echo "JWT_SECRET=$JWT_SEC" >> .env
+            echo "SPRING_AI_OPENAI_API_KEY=$OPENAI_KEY" >> .env
             
             # 도커 배포 프로세스
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/autoset-backend:latest

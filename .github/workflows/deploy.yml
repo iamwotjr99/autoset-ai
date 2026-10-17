@@ -69,7 +69,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          envs: DB_URL, DB_USER, DB_PASS, JWT_SEC  # github secrets 변수들을 SSH 환경으로 전달
+          envs: DB_URL, DB_USER, DB_PASS, JWT_SEC, OPENAI_KEY  # github secrets 변수들을 SSH 환경으로 전달
           script: |
             # EC2 서버에 동적으로 .env 파일 생성 (환경변수 주입)
             echo "SPRING_DATASOURCE_URL=$DB_URL" > .env
@@ -80,6 +80,6 @@ jobs:
             
             # 도커 배포 프로세스
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/autoset-backend:latest
-            sudo docker-compose -f docker-compose.prod.yml down
-            sudo docker-compose -f docker-compose.prod.yml up -d
+            sudo docker compose -f docker-compose.prod.yml down
+            sudo docker compose -f docker-compose.prod.yml up -d
             sudo docker image prune -f
